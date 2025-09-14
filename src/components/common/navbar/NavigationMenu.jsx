@@ -21,7 +21,7 @@ const menus = [
   },
   {
     title: "Courses",
-    path: "/",
+    path: "/courses",
   },
   {
     title: "Learn",

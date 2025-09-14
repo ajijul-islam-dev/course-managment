@@ -1,9 +1,10 @@
 import React from 'react'
+import SlideSectionBox from './SlideSectionBox'
 
 const Banner = () => {
   return (
     <div className='w-full min-h-screen bg-gradient-to-br from-cyan-950 to-sky-950'>
-        <div className="container mx-auto px-5 pt-20"></div>
+       <SlideSectionBox/>
     </div>
   )
 }
