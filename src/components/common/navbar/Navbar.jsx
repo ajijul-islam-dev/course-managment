@@ -19,7 +19,9 @@ const Navbar = () => {
             priority
           />
         </Link>
-        <NavigationMenuLinks />
+        <div className="hidden md:block">
+           <NavigationMenuLinks />
+        </div>
         <Link href="/login">
           <Button
             className="text-lg rounded-full text-blue-500 bg-blue-100 hover:bg-blue-200 hover:text-blue-500"

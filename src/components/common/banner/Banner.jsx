@@ -4,7 +4,7 @@ import BannerNottomSection from './BannerNottomSection'
 
 const Banner = () => {
   return (
-    <div className='w-full min-h-screen py-10 bg-gradient-to-br from-cyan-950 to-sky-950'>
+    <div className='w-full py-10 min-h-screen bg-gradient-to-br from-cyan-950 to-sky-950'>
        <SlideSectionBox/>
        <BannerNottomSection/>
     </div>
