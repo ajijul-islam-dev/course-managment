@@ -1,80 +1,41 @@
-"use client";
-
-import * as React from "react";
+import React from "react";
 import Link from "next/link";
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
-
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
 const menus = [
-  {
-    title: "Home",
-    path: "/",
-  },
-  {
-    title: "Courses",
-    path: "/courses",
-  },
-  {
-    title: "Learn",
-    path: "/learn",
-  },
-  {
-    title: "Instructor",
-    path: "/instructor",
-  },
-  {
-    title: "SSC Result",
-    path: "/ssc-result",
-  },
-  {
-    title: "About Us",
-    path: "/about-us",
-  },
-  {
-    title: "Contact Us",
-    path: "/contact-us",
-  },
+  { title: "Home", path: "/" },
+  { title: "Courses", path: "/courses" },
+  { title: "Learn", path: "/learn" },
+  { title: "Instructor", path: "/instructor" },
+  { title: "SSC Result", path: "/ssc-result" },
+  { title: "About Us", path: "/about-us" },
+  { title: "Contact Us", path: "/contact-us" },
 ];
 
-const NavigationMenuLinks = () => {
-  return (
+const NavigationMenuLinks = () => (
+  <nav>
     <NavigationMenu viewport={false}>
-      <NavigationMenuList>
-        {menus.map((m) => {
-          return (
-            <NavigationMenuItem key={m.title}>
-              <NavigationMenuLink asChild>
-                <Link className="text-2xl" href={m.path}>{m.title}</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          );
-        })}
+      <NavigationMenuList className="flex text-start flex-col w-full lg:flex-row gap-4 md:gap-6 bg-white md:bg-transparent p-4 md:p-0 rounded-md shadow md:shadow-none">
+        {menus.map((m) => (
+          <NavigationMenuItem key={m.title}>
+            <NavigationMenuLink asChild>
+              <Link
+                className="text-lg md:text-base font-medium hover:text-blue-600 transition-colors py-2 px-3 rounded hover:bg-gray-100 md:hover:bg-transparent"
+                href={m.path}
+              >
+                {m.title}
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
-  );
-};
+  </nav>
+);
 
-function ListItem({ title, children, href, ...props }) {
-  return (
-    <li {...props}>
-      <NavigationMenuLink asChild>
-        <Link href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-            {children}
-          </p>
-        </Link>
-      </NavigationMenuLink>
-    </li>
-  );
-}
 export default NavigationMenuLinks;
