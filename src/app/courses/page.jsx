@@ -1,5 +1,6 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import Link from "next/link";
 
 const Courses = () => {
   const courseTabs = [
@@ -106,7 +107,7 @@ const Courses = () => {
                 style={{ opacity: 1 }}
               >
                 {/* --- Course Cards Start --- */}
-                <div
+                <Link href="/courses/1"
                   className="group cursor-pointer"
                   style={{ opacity: 1, transform: "none" }}
                 >
@@ -184,7 +185,7 @@ const Courses = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
                 {/* --- Repeat similar blocks for other courses --- */}
               </div>
             </TabsContent>
