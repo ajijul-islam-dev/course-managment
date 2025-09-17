@@ -260,7 +260,7 @@ const CourseDetails = () => {
                       <div className="jsx-undefined p-8">
                         <div
                           className="space-y-4"
-                          style={{"opacity": 1, "transform": "none"}}
+                          style={{ opacity: 1, transform: "none" }}
                         >
                           <div className="jsx-undefined mb-6">
                             <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
@@ -269,7 +269,7 @@ const CourseDetails = () => {
                             <div
                               className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
                               tabIndex="0"
-                              style={{transform: "none"}}
+                              style={{ transform: "none" }}
                             >
                               <div className="jsx-undefined flex items-center justify-between">
                                 <div className="jsx-undefined flex items-center gap-3">
@@ -304,7 +304,7 @@ const CourseDetails = () => {
                             <div
                               className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
                               tabIndex="0"
-                              style={{transform: "none"}}
+                              style={{ transform: "none" }}
                             >
                               <div className="jsx-undefined flex items-center justify-between">
                                 <div className="jsx-undefined flex items-center gap-3">
