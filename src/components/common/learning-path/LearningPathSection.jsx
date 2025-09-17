@@ -47,7 +47,7 @@ const LearningPathSection = () => {
                     Comprehensive academic preparation for all levels
                   </p>
                   <div className="flex items-center justify-end mt-auto">
-                    <div className="flex items-center text-oc-primary font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
+                    <div className="flex items-center text-blue-500 font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
@@ -91,7 +91,7 @@ const LearningPathSection = () => {
                     Specialized courses for university admissions
                   </p>
                   <div className="flex items-center justify-end mt-auto">
-                    <div className="flex items-center text-oc-primary font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
+                    <div className="flex items-center text-blue-500 font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
@@ -135,7 +135,7 @@ const LearningPathSection = () => {
                     Advanced math concepts and problem solving
                   </p>
                   <div className="flex items-center justify-end mt-auto">
-                    <div className="flex items-center text-oc-primary font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
+                    <div className="flex items-center text-blue-500 font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
@@ -179,7 +179,7 @@ const LearningPathSection = () => {
                     Comprehensive science and physics courses
                   </p>
                   <div className="flex items-center justify-end mt-auto">
-                    <div className="flex items-center text-oc-primary font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
+                    <div className="flex items-center text-blue-500 font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
@@ -223,7 +223,7 @@ const LearningPathSection = () => {
                     Modern technology and programming courses
                   </p>
                   <div className="flex items-center justify-end mt-auto">
-                    <div className="flex items-center text-oc-primary font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
+                    <div className="flex items-center text-blue-500 font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
@@ -267,7 +267,7 @@ const LearningPathSection = () => {
                     Join our supportive learning community
                   </p>
                   <div className="flex items-center justify-end mt-auto">
-                    <div className="flex items-center text-oc-primary font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
+                    <div className="flex items-center text-blue-500 font-semibold text-sm md:text-base group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <svg
                         className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
