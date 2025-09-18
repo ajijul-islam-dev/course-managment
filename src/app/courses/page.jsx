@@ -74,13 +74,13 @@ const Courses = () => {
           </div>
 
           <Tabs defaultValue="all" className="mb-12">
-            <div className="flex justify-center">
+            <div className="flex justify-center relative z-0">
               <TabsList className="flex flex-wrap gap-2 sm:gap-4 justify-center bg-transparent p-0 border-0 shadow-none">
                 {courseTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="px-5 py-3 sm:px-8 sm:py-4 rounded-full font-medium transition-all duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base
+                    className="relative z-10 px-5 py-3 sm:px-8 sm:py-4 rounded-full font-medium transition-all duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base
                       data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg
                       data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 hover:bg-blue-50 border border-gray-200 hover:border-blue-300"
                   >
@@ -99,7 +99,7 @@ const Courses = () => {
               </TabsList>
             </div>
             <TabsContent value="all">
-              <h2 className="text-xl font-semibold text-gray-800 mb-10 mt-16 lg:mt-10  ">
+              <h2 className="text-xl font-semibold text-gray-800 mb-10 mt-20 lg:mt-10  ">
                 All Courses
               </h2>
               <div

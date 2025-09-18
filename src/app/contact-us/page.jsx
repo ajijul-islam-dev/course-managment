@@ -25,7 +25,7 @@ const ContactUs = () => {
 
   return (
     <div>
-      <div className="relative min-h-screen overflow-hidden bg-gray-50 py-10 sm:py-20">
+      <div className="relative py-20 min-h-screen overflow-hidden bg-gray-50 sm:py-20">
         <div className="relative z-10 min-h-screen sm:p-6 ">
           <div className="max-w-7xl mx-auto">
             <div
