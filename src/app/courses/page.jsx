@@ -33,7 +33,7 @@ const Courses = () => {
 
   return (
     <div>
-      <div className="min-h-screen py-10">
+      <div className="min-h-screen py-16">
         <div className="container mx-auto px-4 py-12 mt-3">
           <div
             className="text-center mb-16"
@@ -99,7 +99,7 @@ const Courses = () => {
               </TabsList>
             </div>
             <TabsContent value="all">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              <h2 className="text-xl font-semibold text-gray-800 mb-10 mt-16 lg:mt-10  ">
                 All Courses
               </h2>
               <div
