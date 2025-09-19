@@ -3,7 +3,7 @@ import React from "react";
 const Learn = () => {
   return (
     <div>
-      <div className="pt-18 min-h-screen bg-gradient-to-br from-indigo-200/50 via-purple-200/50 via-pink-200/50 via-blue-50 to-cyan-200/50">
+      <div className="pt-18 min-h-screen bg-gradient-to-br from-indigo-200/50 via-purple-200/50 to-cyan-200/50">
         <div className="min-h-screen">
           <div className="container mx-auto px-4 py-12">
             <div className="text-center mt-6 mb-16">

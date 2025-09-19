@@ -1,15 +1,52 @@
+"use client";
+
 import React from "react";
+import { signIn } from "next-auth/react";
 
 const Login = () => {
+  const [formData, setFormData] = React.useState({
+    email: "",
+    password: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    try {
+      signIn("credentials", {
+        ...formData,
+        redirect: true,
+        callbackUrl: "/",
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signIn("google", {
+        callbackUrl: "/",
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div>
-      <div className="pt-18 min-h-screen bg-gradient-to-br from-indigo-200/50 via-purple-200/50 via-pink-200/50 via-blue-50 to-cyan-200/50">
+      <div className="pt-18 min-h-screen bg-gradient-to-br from-indigo-200/50 via-purple-200/50 to-cyan-200/50">
         <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center p-4">
           <div
             className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md"
             style={{ opacity: 1, transform: "none" }}
           >
-            <div className="text-center mb-8" style={{ opacity: 1, transform: "none" }}>
+            <div
+              className="text-center mb-8"
+              style={{ opacity: 1, transform: "none" }}
+            >
               <div className="flex justify-center items-center">
                 <img
                   alt="Redwans Method"
@@ -27,7 +64,11 @@ const Login = () => {
               </h2>
               <p className="text-gray-600">Please sign in to continue</p>
             </div>
-            <form className="space-y-4" style={{ opacity: 1, transform: "none" }}>
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4"
+              style={{ opacity: 1, transform: "none" }}
+            >
               <div className="relative">
                 <svg
                   stroke="currentColor"
@@ -46,7 +87,8 @@ const Login = () => {
                   required=""
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder-gray-500"
                   type="email"
-        
+                  onChange={handleChange}
+                  defaultValue={formData.email}
                   name="email"
                 />
               </div>
@@ -68,7 +110,8 @@ const Login = () => {
                   required=""
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder-gray-500"
                   type="password"
-        
+                  onChange={handleChange}
+                  defaultValue={formData.password}
                   name="password"
                 />
                 <button
@@ -117,6 +160,7 @@ const Login = () => {
               <div className="flex-1 border-t border-gray-300"></div>
             </div>
             <button
+              onClick={handleGoogleLogin}
               className="w-full flex bg-white items-center justify-center gap-4 shadow-lg rounded-lg pl-3 py-3 border border-gray-300 hover:shadow-xl transition-shadow"
               tabIndex="0"
               style={{ transform: "none" }}
@@ -156,7 +200,10 @@ const Login = () => {
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a className="text-blue-600 hover:underline" href="/privacy-policy">
+                <a
+                  className="text-blue-600 hover:underline"
+                  href="/privacy-policy"
+                >
                   Privacy Policy
                 </a>
               </p>

@@ -99,7 +99,7 @@ const Courses = () => {
               </TabsList>
             </div>
             <TabsContent value="all">
-              <h2 className="text-xl font-semibold text-gray-800 mb-10 mt-20 lg:mt-10  ">
+              <h2 className="text-xl font-semibold text-gray-800 mb-10 mt-28 lg:mt-10  ">
                 All Courses
               </h2>
               <div
