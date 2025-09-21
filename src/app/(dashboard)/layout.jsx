@@ -11,7 +11,9 @@ export default function DashboardLayout({ children }) {
       <AppSidebar />
       <div className="container mx-auto px-5">
         <DashboardNav/>
-        {children}
+        <div className="py-10">
+           {children}
+        </div>
       </div>
     </SidebarProvider>
   );

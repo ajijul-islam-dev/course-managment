@@ -1,5 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
+import { BookOpen, Users, FileText, Calendar, Settings, LogOut } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -12,55 +11,70 @@ import {
 } from "@/components/ui/sidebar"
 import Logo from "../Logo"
 
-// Menu items.
+// Course management dashboard menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Courses",
+    url: "/courses",
+    icon: BookOpen,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Students",
+    url: "/students",
+    icon: Users,
+  },
+  {
+    title: "Assignments",
+    url: "/assignments",
+    icon: FileText,
   },
   {
     title: "Calendar",
-    url: "#",
+    url: "/calendar",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
     title: "Settings",
-    url: "#",
+    url: "/settings",
     icon: Settings,
   },
 ]
 
 export function AppSidebar() {
   return (
-    <Sidebar className="container mx-auto">
+    <Sidebar className="min-h-screen w-64 bg-background border-r shadow-lg">
       <SidebarContent>
         <SidebarGroup>
-         
-         <Logo/>
-          <SidebarGroupLabel className="text-xl">Dashboard</SidebarGroupLabel>
+          <div className="flex items-center gap-2 px-4 py-6">
+            <Logo />
+          </div>
+          <SidebarGroupLabel className="text-lg font-semibold px-4 mb-2 text-muted-foreground">Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.title} className="mb-1">
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a
+                      href={item.url}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors text-foreground"
+                    >
+                      <item.icon className="w-5 h-5 text-muted-foreground" />
+                      <span className="font-medium">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem className="mt-6">
+                <SidebarMenuButton asChild>
+                  <a
+                    href="/logout"
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-destructive hover:text-destructive-foreground transition-colors text-destructive"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span className="font-medium">Logout</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
