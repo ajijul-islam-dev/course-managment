@@ -9,9 +9,9 @@ export default function DashboardLayout({ children }) {
   return (
      <SidebarProvider>
       <AppSidebar />
-      <div className="container mx-auto px-5">
+      <div className="w-full">
         <DashboardNav/>
-        <div className="py-10">
+        <div className="">
            {children}
         </div>
       </div>

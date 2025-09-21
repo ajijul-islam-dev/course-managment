@@ -1,3 +1,4 @@
+
 import { BookOpen, Users, FileText, Calendar, Settings, LogOut } from "lucide-react"
 import {
   Sidebar,
@@ -10,17 +11,18 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Logo from "../Logo"
+import Link from "next/link"
 
 // Course management dashboard menu items.
 const items = [
   {
     title: "Courses",
-    url: "/courses",
+    url: "/dashboard",
     icon: BookOpen,
   },
   {
     title: "Students",
-    url: "/students",
+    url: "/dashboard/students",
     icon: Users,
   },
   {
@@ -54,25 +56,25 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title} className="mb-1">
                   <SidebarMenuButton asChild>
-                    <a
+                    <Link
                       href={item.url}
                       className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors text-foreground"
                     >
                       <item.icon className="w-5 h-5 text-muted-foreground" />
                       <span className="font-medium">{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem className="mt-6">
                 <SidebarMenuButton asChild>
-                  <a
+                  <Link
                     href="/logout"
                     className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-destructive hover:text-destructive-foreground transition-colors text-destructive"
                   >
                     <LogOut className="w-5 h-5" />
                     <span className="font-medium">Logout</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

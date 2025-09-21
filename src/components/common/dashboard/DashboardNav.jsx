@@ -20,7 +20,7 @@ export default function DashboardNav({ setMobileMenuOpen }) {
   const router = useRouter();
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between px-5">
         <div className="flex items-center gap-2">
                <SidebarTrigger />
             <Input placeholder="Search..." />

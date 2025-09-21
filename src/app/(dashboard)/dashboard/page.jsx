@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableHead, TableRow, TableCell, TableBody, TableHeader } from "@/components/ui/table";
-import { Pagination, PaginationItem } from "@/components/ui/pagination";
 import { Plus, Edit, Trash2, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Dummy data
@@ -27,6 +26,13 @@ const allCourses = [
 
 const courseTypes = ["All", "Frontend", "Backend", "Design"];
 const pageSize = 5;
+
+const typeColors = {
+  Frontend: "bg-blue-100 text-blue-700 border-blue-300",
+  Backend: "bg-green-100 text-green-700 border-green-300",
+  Design: "bg-pink-100 text-pink-700 border-pink-300",
+  All: "bg-gray-100 text-gray-700 border-gray-300",
+};
 
 export default function DashboardPage() {
   const [search, setSearch] = useState("");
@@ -52,58 +58,55 @@ export default function DashboardPage() {
 
   // Handlers
   const handleDelete = (id) => {
-    // Implement delete logic here
     alert(`Delete course ${id}`);
   };
   const handleEdit = (id) => {
-    // Implement edit logic here
     alert(`Edit course ${id}`);
   };
   const handleView = (id) => {
-    // Implement view logic here
     alert(`View course ${id}`);
   };
 
   return (
-    <div>
-      <div className="p-8 min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200">
+    <div className="p-5 bg-gradient-to-br from-blue-200 via-pink-100 to-green-100 min-h-screen">
+      <div>
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-blue-700">Course Management Dashboard</h1>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <h1 className="text-3xl font-bold text-blue-700 drop-shadow">Course Management Dashboard</h1>
+          <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow">
             <Plus className="mr-2 h-4 w-4" />
             New Course
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+          <Card className="border-blue-300 shadow-lg bg-blue-50">
             <CardHeader>
-              <CardTitle>Total Courses</CardTitle>
+              <CardTitle className="text-blue-700">Total Courses</CardTitle>
             </CardHeader>
             <CardContent>
-              <span className="text-4xl font-bold">{allCourses.length}</span>
+              <span className="text-4xl font-bold text-blue-600">{allCourses.length}</span>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-green-300 shadow-lg bg-green-50">
             <CardHeader>
-              <CardTitle>Active Students</CardTitle>
+              <CardTitle className="text-green-700">Active Students</CardTitle>
             </CardHeader>
             <CardContent>
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold text-green-600">
                 {allCourses.reduce((acc, c) => acc + c.students, 0)}
               </span>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-pink-300 shadow-lg bg-pink-50">
             <CardHeader>
-              <CardTitle>Pending Requests</CardTitle>
+              <CardTitle className="text-pink-700">Pending Requests</CardTitle>
             </CardHeader>
             <CardContent>
-              <span className="text-4xl font-bold">7</span>
+              <span className="text-4xl font-bold text-pink-600">7</span>
             </CardContent>
           </Card>
         </div>
-        <div className=" mb-6 w-full flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex gap-2 w-full  ">
+        <div className="mb-6 w-full flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex gap-2 w-full">
             <Input
               placeholder="Search courses..."
               value={search}
@@ -111,18 +114,18 @@ export default function DashboardPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="max-w-xs bg-white"
+              className="max-w-xs bg-white border-pink-300 focus:ring-pink-400"
             />
           </div>
           <div className="flex gap-2 w-full md:justify-end">
-               <Select
+            <Select
               value={type}
               onValueChange={(v) => {
                 setType(v);
                 setPage(1);
               }}
             >
-              <SelectTrigger className="max-w-xs bg-white border-blue-500 focus:ring-blue-500">
+              <SelectTrigger className="max-w-xs bg-white border-blue-400 focus:ring-blue-400">
                 <SelectValue placeholder="Filter by Type" />
               </SelectTrigger>
               <SelectContent>
@@ -137,7 +140,7 @@ export default function DashboardPage() {
               value={sort}
               onValueChange={setSort}
             >
-              <SelectTrigger className="max-w-xs bg-white border-blue-500 focus:ring-blue-500">
+              <SelectTrigger className="max-w-xs bg-white border-green-400 focus:ring-green-400">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -147,18 +150,18 @@ export default function DashboardPage() {
             </Select>
           </div>
         </div>
-        <Card>
+        <Card className="shadow-lg border-blue-200">
           <CardHeader>
-            <CardTitle>All Courses</CardTitle>
+            <CardTitle className="text-blue-700">All Courses</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Students</TableCell>
-                  <TableCell className="text-right">Actions</TableCell>
+                <TableRow className="bg-gradient-to-r from-blue-100 via-pink-100 to-green-100">
+                  <TableCell className="font-bold text-blue-700">Name</TableCell>
+                  <TableCell className="font-bold text-green-700">Type</TableCell>
+                  <TableCell className="font-bold text-pink-700">Students</TableCell>
+                  <TableCell className="text-right font-bold text-gray-700">Actions</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -170,14 +173,21 @@ export default function DashboardPage() {
                   </TableRow>
                 ) : (
                   pagedCourses.map((course) => (
-                    <TableRow key={course.id}>
+                    <TableRow key={course.id} className="hover:bg-blue-50 transition">
                       <TableCell>{course.name}</TableCell>
-                      <TableCell>{course.type}</TableCell>
-                      <TableCell>{course.students}</TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded-full border text-xs font-semibold ${typeColors[course.type]}`}>
+                          {course.type}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-2 py-1 rounded bg-pink-100 text-pink-700 font-semibold">{course.students}</span>
+                      </TableCell>
                       <TableCell className="flex gap-2 justify-end">
                         <Button
                           variant="outline"
                           size="sm"
+                          className="border-blue-400 text-blue-600 hover:bg-blue-100"
                           onClick={() => handleView(course.id)}
                         >
                           <Eye className="h-4 w-4" />
@@ -185,6 +195,7 @@ export default function DashboardPage() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="border-green-400 text-green-600 hover:bg-green-100"
                           onClick={() => handleEdit(course.id)}
                         >
                           <Edit className="h-4 w-4" />
@@ -192,6 +203,7 @@ export default function DashboardPage() {
                         <Button
                           variant="destructive"
                           size="sm"
+                          className="border-pink-400 text-white hover:bg-red-400 "
                           onClick={() => handleDelete(course.id)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -202,68 +214,65 @@ export default function DashboardPage() {
                 )}
               </TableBody>
             </Table>
-           <div className="flex justify-center items-center gap-4 mt-6">
-  {/* Prev */}
-  <button
-    disabled={page === 1}
-    onClick={() => page > 1 && setPage(page - 1)}
-    className={`flex items-center justify-center rounded-full px-3 py-2 transition 
-      ${page === 1 
-        ? "text-gray-400 cursor-not-allowed bg-gray-100" 
-        : "hover:bg-blue-100 text-blue-600 bg-white shadow"}`
-    }
-  >
-    <ChevronLeft className="h-5 w-5" />
-  </button>
-
-  {/* Page Numbers */}
-  <div className="flex items-center gap-2">
-    {Array.from({ length: totalPages }, (_, i) => {
-      const pageNumber = i + 1
-      const isActive = page === pageNumber
-      return (
-        <button
-          key={pageNumber}
-          onClick={() => setPage(pageNumber)}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition
-            ${isActive 
-              ? "bg-blue-600 text-white shadow-md" 
-              : "hover:bg-blue-100 text-blue-600 bg-white shadow"}`
-          }
-        >
-          {pageNumber}
-        </button>
-      )
-    })}
-  </div>
-
-  {/* Next */}
-  <button
-    disabled={page === totalPages}
-    onClick={() => page < totalPages && setPage(page + 1)}
-    className={`flex items-center justify-center rounded-full px-3 py-2 transition 
-      ${page === totalPages 
-        ? "text-gray-400 cursor-not-allowed bg-gray-100" 
-        : "hover:bg-blue-100 text-blue-600 bg-white shadow"}`
-    }
-  >
-    <ChevronRight className="h-5 w-5" />
-  </button>
-</div>
-
+            <div className="flex justify-center items-center gap-4 mt-6">
+              {/* Prev */}
+              <button
+                disabled={page === 1}
+                onClick={() => page > 1 && setPage(page - 1)}
+                className={`flex items-center justify-center rounded-full px-3 py-2 transition 
+                  ${page === 1 
+                    ? "text-gray-400 cursor-not-allowed bg-gray-100" 
+                    : "hover:bg-blue-100 text-blue-600 bg-white shadow"}`
+                }
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              {/* Page Numbers */}
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNumber = i + 1
+                  const isActive = page === pageNumber
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setPage(pageNumber)}
+                      className={`rounded-full px-4 py-2 text-sm font-medium transition
+                        ${isActive 
+                          ? "bg-blue-600 text-white shadow-md" 
+                          : "hover:bg-blue-100 text-blue-600 bg-white shadow"}`
+                      }
+                    >
+                      {pageNumber}
+                    </button>
+                  )
+                })}
+              </div>
+              {/* Next */}
+              <button
+                disabled={page === totalPages}
+                onClick={() => page < totalPages && setPage(page + 1)}
+                className={`flex items-center justify-center rounded-full px-3 py-2 transition 
+                  ${page === totalPages 
+                    ? "text-gray-400 cursor-not-allowed bg-gray-100" 
+                    : "hover:bg-blue-100 text-blue-600 bg-white shadow"}`
+                }
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
           </CardContent>
         </Card>
         <div className="mt-10">
-          <Card>
+          <Card className="border-pink-200 shadow-lg bg-pink-50">
             <CardHeader>
-              <CardTitle>Recent Courses</CardTitle>
+              <CardTitle className="text-pink-700">Recent Courses</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
                 {allCourses.slice(0, 3).map((course) => (
                   <li key={course.id} className="flex items-center justify-between">
-                    <span>{course.name}</span>
-                    <Button variant="outline" size="sm" onClick={() => handleView(course.id)}>
+                    <span className="font-semibold text-blue-700">{course.name}</span>
+                    <Button variant="outline" size="sm" className="border-blue-400 text-blue-600 hover:bg-blue-100" onClick={() => handleView(course.id)}>
                       View
                     </Button>
                   </li>
