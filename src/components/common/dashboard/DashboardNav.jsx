@@ -14,10 +14,13 @@ import { LayoutDashboard, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation"; // client compatible
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import React from "react";
 
-export default function DashboardNav({ setMobileMenuOpen }) {
+export default function DashboardNav() {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);  
 
   return (
     <div className="flex items-center justify-between px-5">
