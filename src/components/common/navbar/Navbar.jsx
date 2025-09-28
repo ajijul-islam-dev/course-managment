@@ -38,6 +38,8 @@ const Navbar = () => {
 
   const isDashboard = pathname.startsWith("/dashboard");
 
+  console.log(session.data?.user);
+
   return (
     <>
       {!isDashboard ? (

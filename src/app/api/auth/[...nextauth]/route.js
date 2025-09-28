@@ -4,9 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { connectDB } from "@/lib/mongoose";
 import User from "@/model/User";
-import  bcrypt  from 'bcryptjs';
-
-
+import bcrypt from "bcryptjs";
 
 export const AuthOptions = {
   session: {
@@ -40,11 +38,11 @@ export const AuthOptions = {
           throw new Error("Invalid password");
         }
 
-        // return minimal safe object (not full mongoose doc)
         return {
           id: dbUser._id.toString(),
           name: dbUser.name,
           email: dbUser.email,
+          role: dbUser.role, 
         };
       },
     }),
@@ -57,53 +55,65 @@ export const AuthOptions = {
   ],
 
   pages: {
-    signIn: "/login", // custom login page
+    signIn: "/login",
   },
 
   callbacks: {
-    async signIn({ user, account, profile }) {
-        await connectDB();
+    async signIn({ user, account }) {
       if (account.provider === "google") {
-        // Handle Google sign-in
+        await connectDB();
         const email = user.email;
         let dbUser = await User.findOne({ email });
 
         if (!dbUser) {
-          // If user doesn't exist, create a new one
           dbUser = new User({
             name: user.name,
             email: user.email,
             image: user.image,
+            role: "student", // default role
           });
           await dbUser.save();
         }
 
-        // Return user object
-        return {
-          id: dbUser._id.toString(),
-          name: dbUser.name,
-          email: dbUser.email,
-        };
+        // ✅ Attach the role to the user object that will be passed to JWT callback
+        user.id = dbUser._id.toString();
+        user.role = dbUser.role;
       }
       return true;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // ✅ For Google OAuth, user object is available during signIn
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
+      
+      // ✅ Alternative: Fetch user from DB if role is missing
+      if (account?.provider === "google" && !token.role) {
+        await connectDB();
+        const dbUser = await User.findOne({ email: token.email });
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+          token.role = dbUser.role;
+        }
+      }
+      
       return token;
     },
+
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-}
+};
+
 const handler = NextAuth(AuthOptions);
 
 export { handler as GET, handler as POST };
