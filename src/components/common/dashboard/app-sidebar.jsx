@@ -1,5 +1,5 @@
 
-import { BookOpen, Users, FileText, Calendar, Settings, LogOut } from "lucide-react"
+import { BookOpen, Users, FileText, Calendar, Settings, LogOut, PowerCircle, Flashlight, ShieldUser } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +21,11 @@ const items = [
     icon: BookOpen,
   },
   {
+    title: "Admin/Instructors",
+    url: "/dashboard/admin-instructors",
+    icon: ShieldUser,
+  },
+    {
     title: "Students",
     url: "/dashboard/students",
     icon: Users,

@@ -3,13 +3,19 @@ import { connectDB } from "@/lib/mongoose";
 import User from "@/model/User";
 import bcrypt from "bcryptjs";
 
-// GET all users (admin/instructor only)
-export const GET = async () => {
+// GET users with optional role filter
+export const GET = async (req) => {
   try {
     await connectDB();
-    const users = await User.find({
-      role: { $in: ["admin", "instructor"] },
-    }).sort({ createdAt: -1 });
+    const { searchParams } = new URL(req.url);
+    const roles = searchParams.get("role")?.split(",") || []; // role query param: student,admin,instructor
+
+    let filter = {};
+    if (roles.length > 0) {
+      filter.role = { $in: roles };
+    }
+
+    const users = await User.find(filter).sort({ createdAt: -1 });
     return NextResponse.json(users, { status: 200 });
   } catch (error) {
     console.error("GET /users error:", error);
@@ -21,7 +27,7 @@ export const GET = async () => {
 export const POST = async (req) => {
   try {
     await connectDB();
-    const { name, email, password } = await req.json();
+    const { name, email, password, role } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
@@ -33,7 +39,7 @@ export const POST = async (req) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword, role: role || "student", status: "pending" });
     await newUser.save();
 
     return NextResponse.json({ message: "User created successfully", user: newUser }, { status: 201 });

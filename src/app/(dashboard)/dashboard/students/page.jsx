@@ -1,185 +1,178 @@
-"use client"
-import React, { useState } from "react";
-import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableHead,
-    TableBody,
-    TableCell,
-} from "@/components/ui/table";
+"use client";
+
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableRow, TableCell, TableBody, TableHeader } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
+import { Trash2, Check, X } from "lucide-react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useSession } from "next-auth/react";
 
-const batches = ["Batch A", "Batch B", "Batch C"];
+export default function StudentsDashboard() {
+  const { data: session } = useSession();
+  const userRole = session?.user?.role || "student"; // current user role
 
-const studentsData = [
-    { id: 1, name: "Alice Johnson", email: "alice@email.com", enrolled: "2024-05-10", batch: "Batch A" },
-    { id: 2, name: "Bob Smith", email: "bob@email.com", enrolled: "2024-05-12", batch: "Batch B" },
-    { id: 3, name: "Charlie Lee", email: "charlie@email.com", enrolled: "2024-05-15", batch: "Batch C" },
-    { id: 4, name: "David Kim", email: "david@email.com", enrolled: "2024-05-18", batch: "Batch A" },
-    { id: 5, name: "Eva Brown", email: "eva@email.com", enrolled: "2024-05-20", batch: "Batch B" },
-    { id: 6, name: "Frank Green", email: "frank@email.com", enrolled: "2024-05-22", batch: "Batch C" },
-    // Add more for pagination demo
-];
+  const [students, setStudents] = useState([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
 
-const PAGE_SIZE = 4;
+  // Fetch students
+  useEffect(() => {
+    async function fetchStudents() {
+      try {
+        const res = await axios.get("/api/users?role=student");
+        setStudents(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchStudents();
+  }, []);
 
-export default function StudentsPage() {
-    const [search, setSearch] = useState("");
-    const [students, setStudents] = useState(studentsData);
-    const [batch, setBatch] = useState("");
-    const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(students.length / pageSize);
+  const pagedStudents = useMemo(
+    () => students.slice((page - 1) * pageSize, page * pageSize),
+    [students, page]
+  );
 
-    const filteredStudents = students.filter(
-        (student) =>
-            (student.name.toLowerCase().includes(search.toLowerCase()) ||
-                student.email.toLowerCase().includes(search.toLowerCase())) &&
-            (batch ? student.batch === batch : true)
-    );
+  // Handlers
+  const handleDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will permanently delete the student!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
 
-    const totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE);
-    const paginatedStudents = filteredStudents.slice(
-        (page - 1) * PAGE_SIZE,
-        page * PAGE_SIZE
-    );
+    if (confirm.isConfirmed) {
+      await axios.delete("/api/users", { data: { userId: id } });
+      setStudents(prev => prev.filter(s => s._id !== id));
+      Swal.fire("Deleted!", "Student has been deleted.", "success");
+    }
+  };
 
-    const handleDelete = (id) => {
-        setStudents(students.filter((s) => s.id !== id));
-    };
+  const handleStatusChange = async (studentId, newStatus) => {
+    try {
+      await axios.patch("/api/users", { userId: studentId, status: newStatus });
+      setStudents(prev =>
+        prev.map(s => (s._id === studentId ? { ...s, status: newStatus } : s))
+      );
+      Swal.fire("Updated!", `Status changed to ${newStatus}`, "success");
+    } catch (err) {
+      Swal.fire("Error!", "Failed to update status.", "error");
+    }
+  };
 
-    return (
-        <div className="max-w-5xl mx-auto p-6 pt-10">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
-                    Students
-                </h1>
-                <Button
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow"
-                    onClick={() => alert("Add student modal (to implement)")}
-                >
-                    + Add Student
-                </Button>
-            </div>
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <Input
-                    type="text"
-                    placeholder="Search students..."
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setPage(1);
-                    }}
-                    className="md:w-1/2"
-                />
-                <Select value={batch} onValueChange={(val) => { setBatch(val === "__all__" ? "" : val); setPage(1); }}>
-                    <SelectTrigger className="md:w-1/4">
-                        <SelectValue placeholder="Select batch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="__all__">All Batches</SelectItem>
-                        {batches.map((b) => (
-                            <SelectItem key={b} value={b}>{b}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="overflow-x-auto rounded-lg shadow-lg bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200">
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Enrolled</TableHead>
-                            <TableHead>Batch</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {paginatedStudents.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={5} className="py-4 text-center text-gray-500">
-                                    No students found.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            paginatedStudents.map((student) => (
-                                <TableRow key={student.id} className="hover:bg-blue-50 transition">
-                                    <TableCell>{student.name}</TableCell>
-                                    <TableCell>{student.email}</TableCell>
-                                    <TableCell>{student.enrolled}</TableCell>
-                                    <TableCell>
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                            student.batch === "Batch A"
-                                                ? "bg-blue-100 text-blue-700"
-                                                : student.batch === "Batch B"
-                                                ? "bg-purple-100 text-purple-700"
-                                                : "bg-pink-100 text-pink-700"
-                                        }`}>
-                                            {student.batch}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-blue-600 hover:bg-blue-100 mr-2"
-                                            onClick={() => alert(`Edit ${student.name}`)}
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-red-600 hover:bg-red-100"
-                                            onClick={() => handleDelete(student.id)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            {totalPages > 1 && (
-                <Pagination className="mt-6 flex justify-center">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationLink
-                                onClick={() => setPage(page > 1 ? page - 1 : 1)}
-                                disabled={page === 1}
-                                className={page === 1 ? "opacity-50 cursor-not-allowed" : ""}
-                            >
-                                Prev
-                            </PaginationLink>
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, idx) => (
-                            <PaginationItem key={idx}>
-                                <PaginationLink
-                                    isActive={page === idx + 1}
-                                    onClick={() => setPage(idx + 1)}
-                                    className={page === idx + 1 ? "bg-blue-500 text-white" : ""}
-                                >
-                                    {idx + 1}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationLink
-                                onClick={() => setPage(page < totalPages ? page + 1 : totalPages)}
-                                disabled={page === totalPages}
-                                className={page === totalPages ? "opacity-50 cursor-not-allowed" : ""}
-                            >
-                                Next
-                            </PaginationLink>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
-        </div>
-    );
+  const canModify = ["admin", "instructor"].includes(userRole);
+
+  return (
+    <div className="p-5 min-h-screen bg-gradient-to-br from-blue-200 via-pink-100 to-green-100">
+      <h1 className="text-3xl font-bold mb-6">Students Management Dashboard</h1>
+
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle>All Students</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Status</TableCell>
+                {canModify && <TableCell className="text-right">Actions</TableCell>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pagedStudents.map(student => (
+                <TableRow key={student._id} className="hover:bg-gray-50 transition">
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell>{student.email}</TableCell>
+                  <TableCell>{student.status}</TableCell>
+                  {canModify && (
+                    <TableCell className="flex gap-2 justify-end">
+                      {student.status === "pending" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-green-400"
+                          onClick={() => handleStatusChange(student._id, "approved")}
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {student.status === "approved" && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleStatusChange(student._id, "disabled")}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {student.status === "disabled" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-green-400"
+                          onClick={() => handleStatusChange(student._id, "approved")}
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(student._id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+              {pagedStudents.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={canModify ? 4 : 3} className="text-center">
+                    No students found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          {/* Pagination */}
+          <div className="flex justify-center gap-2 mt-4">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+              className="px-3 py-1 rounded bg-white border shadow disabled:opacity-50"
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`px-3 py-1 rounded ${
+                  page === i + 1 ? "bg-blue-600 text-white" : "bg-white border"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage(page + 1)}
+              className="px-3 py-1 rounded bg-white border shadow disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

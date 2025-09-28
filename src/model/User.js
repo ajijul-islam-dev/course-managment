@@ -40,11 +40,7 @@ const userSchema = new mongoose.Schema(
     },
     classlevel: {
       type: String,
-      enum: [
-        "class 8",
-        "ssc",
-        "hsc",
-      ],
+      enum: ["class 8", "ssc", "hsc"],
       required: false,
     },
     role: {
@@ -52,8 +48,13 @@ const userSchema = new mongoose.Schema(
       enum: ["admin", "instructor", "student"],
       default: "student",
     },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "disabled", "requested"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.User || mongoose.model("User", userSchema);  
+export default mongoose.models.User || mongoose.model("User", userSchema);
