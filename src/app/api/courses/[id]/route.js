@@ -15,6 +15,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   await connectDB();
+
   const session = await getServerSession(AuthOptions);
   if (!session || !["admin","instructor"].includes(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

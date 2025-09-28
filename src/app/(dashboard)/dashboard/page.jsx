@@ -201,9 +201,11 @@ export default function DashboardPage() {
                         <Button variant="outline" size="sm" className="border-blue-400 text-blue-600 hover:bg-blue-100" onClick={() => handleView(c._id)}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" className="border-green-400 text-green-600 hover:bg-green-100" onClick={() => handleEdit(c._id)}>
+                       <Link href={`/dashboard/edit-course/${c._id}`}>
+                        <Button variant="outline" size="sm" className="border-green-400 text-green-600 hover:bg-green-100">
                           <Edit className="h-4 w-4" />
                         </Button>
+                       </Link>
                         <Button variant="destructive" size="sm" className="border-pink-400 text-white hover:bg-red-400" onClick={() => handleDelete(c._id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
