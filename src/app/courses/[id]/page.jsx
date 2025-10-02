@@ -1,41 +1,100 @@
-import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"; // Adjust import path as needed
+"use client";
 
-const instructors = [
-  {
-    name: "Redwan Hushen",
-    img: "https://cdn.redwansmethod.com/images/Redwan%20Hushen%20Famous%20%281%29-1749843038117.png",
-  },
-  {
-    name: "Rafiqul Islam Nafi",
-    img: "https://cdn.redwansmethod.com/images/Nafi-1749844433572.png",
-  },
-  {
-    name: "Durbar Roy Dhrubo",
-    img: "https://cdn.redwansmethod.com/images/Durbar%20Roy%20Dhruba-1749844600701.png",
-  },
-  {
-    name: "Mohimenul Islam Omi",
-    img: "https://cdn.redwansmethod.com/images/Mohimenul%20Islam%20Omi-1749844685445.png",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import Loading from "@/app/loading";
 
-const includedCourses = [
-  {
-    name: "SSC Math Basic to Pro 2.0 Course ( Live)",
-    img: "https://cdn.redwansmethod.com/images/Math%20B2P-1751353315934.jpg",
-  },
-  {
-    name: "SSC English 1st & 2nd Basic to Pro 2.0",
-    img: "https://cdn.redwansmethod.com/images/English%20B2P%202p0-1751353136810.jpg",
-  },
-  {
-    name: "SSC ICT Basic to Pro 2.0 Course",
-    img: "https://cdn.redwansmethod.com/images/ICT%20B2P%20for%20web%20copy-1753612568821.png",
-  },
-];
 
-const CourseDetails = () => {
+
+
+
+const CourseDetails = ({ params }) => {
+  const { id } =  React.use(params);
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      if (!id) return;
+      
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/courses/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch course');
+        }
+        const courseData = await response.json();
+        setCourse(courseData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+       <Loading />
+      </div>
+    );
+  }
+
+  if (error || !course) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <p className="text-red-600 text-lg">Error: {error || "Course not found"}</p>
+          <button
+            onClick={() => router.back()}
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Transform modules data for the UI
+  const getInstructorsData = () => {
+    // You might want to fetch actual instructor data based on course.instructor
+    // For now, using placeholder data as in your original code
+    return [
+      {
+        name: "Redwan Hushen",
+        img: "https://cdn.redwansmethod.com/images/Redwan%20Hushen%20Famous%20%281%29-1749843038117.png",
+      },
+      {
+        name: "Rafiqul Islam Nafi",
+        img: "https://cdn.redwansmethod.com/images/Nafi-1749844433572.png",
+      },
+      {
+        name: "Durbar Roy Dhrubo",
+        img: "https://cdn.redwansmethod.com/images/Durbar%20Roy%20Dhruba-1749844600701.png",
+      },
+      {
+        name: "Mohimenul Islam Omi",
+        img: "https://cdn.redwansmethod.com/images/Mohimenul%20Islam%20Omi-1749844685445.png",
+      },
+    ];
+  };
+
+  const getIncludedCoursesData = () => {
+    // Transform subjects into included courses format
+    return course.subjects.map((subject, index) => ({
+      name: `${subject} Course`,
+      img: `https://cdn.redwansmethod.com/images/course-${index + 1}.jpg`, // You might want to use actual images from your course data
+    }));
+  };
+
+  const instructors = getInstructorsData();
+  const includedCourses = getIncludedCoursesData();
+
   return (
     <div>
       <div className="relative min-h-screen overflow-hidden py-20 bg-gray-100">
@@ -96,14 +155,17 @@ const CourseDetails = () => {
             <path d="M15 18l6 -6"></path>
           </svg>
         </div>
+        
         {/* Main container */}
         <div className="relative z-10 container mx-auto px-4 py-8 mt-10">
           <button
+            onClick={() => router.back()}
             className="mb-8 flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
             style={{ opacity: 1 }}
           >
             ← Back to Courses
           </button>
+          
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left section */}
             <div className="lg:col-span-2 order-2 lg:order-1">
@@ -113,7 +175,7 @@ const CourseDetails = () => {
                   <TabsList className="flex border-b bg-transparent w-full py-0">
                     <TabsTrigger
                       value="overview"
-                      className=" flex-1 flex flex-col items-center justify-center gap-1 py-4 px-6 font-medium transition-all text-gray-600 hover:text-blue-600 hover:bg-gray-50 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 border-b-2 border-transparent data-[state=active]:border-blue-600"
+                      className="flex-1 flex flex-col items-center justify-center gap-1 py-4 px-6 font-medium transition-all text-gray-600 hover:text-blue-600 hover:bg-gray-50 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600 border-b-2 border-transparent data-[state=active]:border-blue-600"
                     >
                       <svg
                         stroke="currentColor"
@@ -153,6 +215,7 @@ const CourseDetails = () => {
                       <span className="text-xs sm:text-sm">Demo Class</span>
                     </TabsTrigger>
                   </TabsList>
+                  
                   {/* Overview Tab */}
                   <TabsContent value="overview" className="p-8">
                     <div className="space-y-6" style={{ opacity: 1 }}>
@@ -187,28 +250,24 @@ const CourseDetails = () => {
                           </div>
                         </div>
                       </div>
+                      
                       {/* Description */}
                       <div>
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                          Combo Description
+                          Course Description
                         </h3>
                         <p
                           style={{ whiteSpace: "pre-line" }}
                           className="text-gray-600 text-justify leading-relaxed"
                         >
-                          প্রিয় শিক্ষার্থীরা, ✨ তোমরা কি জানো? যে এস.এস.সি তে
-                          40-60% শিক্ষার্থী তাদের আশানুরূপ ফলাফল পায় না শুধু
-                          মাত্র General Subject এর কারণে। 😓📉 তাহলেতো বুঝতেই
-                          পারছো এস.এস.সি লাইফে Math, English &amp; ICT কে একদমই
-                          ছোট চোখে দেখা যাবে না! 🎯 তাই তোমাদেরকে Subject গুলোতে
-                          তে সম্পূর্ণ ব্যাসিক থেকে গড়ে তুলত...
+                          {course.description}
                         </p>
                         <button className="text-blue-600 hover:underline mt-2 mb-2">
                           See more
                         </button>
                         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                           <span className="block font-semibold text-blue-700 text-base sm:text-lg mb-1">
-                            বি.দ্র. কেনার পূর্বে অবশ্যই এই ভিডিওটি দেখে নাও :
+                            Important Note: Please watch this video before purchasing:
                           </span>
                           <a
                             href="https://www.youtube.com/watch?v=WO1KcxKmgYk"
@@ -220,20 +279,21 @@ const CourseDetails = () => {
                           </a>
                         </div>
                       </div>
+                      
                       {/* Included Courses */}
                       <div>
                         <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                          Included Courses
+                          Included Subjects
                         </h3>
                         <div className="flex flex-wrap gap-3">
-                          {includedCourses.map((course) => (
+                          {includedCourses.map((courseItem, index) => (
                             <div
-                              key={course.name}
+                              key={index}
                               className="w-full sm:w-40 sm:min-w-[8rem] sm:max-w-[10rem] bg-blue-50 rounded-lg border border-blue-100 shadow-sm flex flex-col cursor-pointer hover:bg-blue-100 hover:text-blue-900 transition-all duration-200 overflow-hidden group mb-2"
                             >
                               <div className="relative w-full aspect-[16/9]">
                                 <img
-                                  alt={course.name}
+                                  alt={courseItem.name}
                                   className="object-cover object-center rounded-t-lg group-hover:scale-105 transition-transform duration-200"
                                   style={{
                                     position: "absolute",
@@ -242,11 +302,11 @@ const CourseDetails = () => {
                                     inset: 0,
                                     color: "transparent",
                                   }}
-                                  src={course.img}
+                                  src={courseItem.img}
                                 />
                               </div>
                               <div className="px-4 py-3 sm:py-2 text-center text-blue-700 text-sm sm:text-xs font-semibold break-words w-full h-full flex items-center justify-center min-h-[3rem] sm:min-h-[2.25rem]">
-                                {course.name}
+                                {courseItem.name}
                               </div>
                             </div>
                           ))}
@@ -254,870 +314,66 @@ const CourseDetails = () => {
                       </div>
                     </div>
                   </TabsContent>
+                  
                   {/* Demo Tab */}
                   <TabsContent value="demo" className="p-8">
                     <div>
-                      <div className="jsx-undefined p-8">
+                      <div className="p-8">
                         <div
                           className="space-y-4"
                           style={{ opacity: 1, transform: "none" }}
                         >
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC Physics Basic to Pro 2.0
-                            </h4>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                              style={{ transform: "none" }}
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      1
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 1
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
+                          {course.subjects.map((subject, subjectIndex) => (
+                            <div key={subject} className="mb-6">
+                              <h4 className="font-semibold text-gray-900 mb-2">
+                                {subject}
+                              </h4>
+                              {course.modules[subject]?.map((module, moduleIndex) => (
+                                <div
+                                  key={module._id}
+                                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
+                                  tabIndex={0}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <span className="text-blue-600 font-bold text-sm">
+                                          {moduleIndex + 1}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <h4 className="font-semibold text-gray-900">
+                                          {module.title}
+                                        </h4>
+                                        <p className="text-sm text-gray-500">
+                                          {module.videos.length} videos
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <svg
+                                      stroke="currentColor"
+                                      fill="none"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      className="w-5 h-5 text-blue-600"
+                                      height="1em"
+                                      width="1em"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
                                   </div>
                                 </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                              style={{ transform: "none" }}
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      2
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 2
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
+                              ))}
+                              {(!course.modules[subject] || course.modules[subject].length === 0) && (
+                                <div className="text-gray-500 text-sm mb-4">
+                                  No demo videos available for this subject.
                                 </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
+                              )}
                             </div>
-                          </div>
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC Chemistry Basic to Pro Course 2.0
-                            </h4>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      3
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 3
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      4
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 4
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      5
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 5
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      2
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 2
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      1
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 1
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC Math Basic to Pro 2.0 Course ( Live)
-                            </h4>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      1
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 1
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      2
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 2
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      3
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 3
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      4
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 4
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      5
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 5
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      6
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 6
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC Higher Math Basic to Pro 2.0 Course ( Live)
-                            </h4>
-                            <div className="jsx-undefined text-gray-500 text-sm mb-4">
-                              No demo videos for this course.
-                            </div>
-                          </div>
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC Biology Basic to Pro 2.0
-                            </h4>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      2
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 2
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      3
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 3
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      4
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 4
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      6
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 6
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      5
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 5
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      1
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 1
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      7
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 7
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      8
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 8
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      9
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 9
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC English 1st &amp; 2nd Basic to Pro 2.0
-                            </h4>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      1
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      Lecture 1
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="jsx-undefined mb-6">
-                            <h4 className="jsx-undefined font-semibold text-gray-900 mb-2">
-                              SSC ICT Basic to Pro 2.0 Course
-                            </h4>
-                            <div
-                              className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer mb-2"
-                              tabIndex="0"
-                            >
-                              <div className="jsx-undefined flex items-center justify-between">
-                                <div className="jsx-undefined flex items-center gap-3">
-                                  <div className="jsx-undefined w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="jsx-undefined text-blue-600 font-bold text-sm">
-                                      1
-                                    </span>
-                                  </div>
-                                  <div className="jsx-undefined">
-                                    <h4 className="jsx-undefined font-semibold text-gray-900">
-                                      লেকচার ০১
-                                    </h4>
-                                    <p className="jsx-undefined text-sm text-gray-500"></p>
-                                  </div>
-                                </div>
-                                <svg
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="w-5 h-5 text-blue-600"
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -1125,6 +381,7 @@ const CourseDetails = () => {
                 </Tabs>
               </div>
             </div>
+            
             {/* Right section */}
             <div className="lg:col-span-1 order-1 lg:order-2">
               <div
@@ -1133,18 +390,18 @@ const CourseDetails = () => {
               >
                 <div>
                   <img
-                    alt="SSC Math, English & ICT Basic to Pro 2.0 Combo Course"
+                    alt={course.title}
                     className="w-full aspect-video object-cover rounded-lg"
-                    src="https://cdn.redwansmethod.com/images/1000071573-1753804000126.jpg"
+                    src={course.thumbnail || "https://cdn.redwansmethod.com/images/1000071573-1753804000126.jpg"}
                   />
                 </div>
                 <div className="text-center mt-4 mb-8">
                   <div className="flex items-center justify-center gap-3 mb-2">
                     <span className="text-3xl font-bold text-blue-600">
-                      ৳2799
+                      ৳{course.price}
                     </span>
                     <span className="text-gray-400 line-through text-lg">
-                      ৳2999
+                      ৳{Math.round(course.price * 1.07)}
                     </span>
                   </div>
                   <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
