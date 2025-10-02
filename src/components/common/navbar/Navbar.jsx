@@ -36,14 +36,14 @@ const Navbar = () => {
 
   const pathname = usePathname();
 
-  const isDashboard = pathname.startsWith("/dashboard");
+  const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/login") || pathname.startsWith("/register");
 
   console.log(session.data?.user);
 
   return (
     <>
       {!isDashboard ? (
-        <div className="bg-white shadow py- px-4 md:px-8 fixed top-0 left-0 right-0 w-full mx-auto z-50">
+        <div className="bg-white shadow pb-4 md:pb-0 px-4 md:px-8 fixed top-0 left-0 right-0 w-full mx-auto z-50">
           <div className="container mx-auto flex items-center justify-between">
             {/* Logo */}
             <Logo/>
@@ -165,7 +165,7 @@ const Navbar = () => {
 
           {/* Mobile Menu */}
           {menuOpen && (
-            <div className="lg:hidden mt-4 px-2 space-y-2">
+            <div className="lg:hidden mt-4 sm:pb-2 px-2 space-y-2">
               {menus.map((m) => (
                 <Link
                   key={m.title}

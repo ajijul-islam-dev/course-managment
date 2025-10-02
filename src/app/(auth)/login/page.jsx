@@ -55,9 +55,9 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
+
     try {
-      const res = await signIn("google", { redirect: false });
+      const res = await signIn("google", { redirect: true, callbackUrl: "/" });
 
       if (res?.ok) {
         Swal.fire({
@@ -66,14 +66,6 @@ const Login = () => {
           text: "You are being redirected...",
           timer: 1500,
           showConfirmButton: false,
-        }).then(() => {
-          window.location.href = "/";
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: res?.error || "Google login failed",
         });
       }
     } catch (error) {
@@ -82,14 +74,12 @@ const Login = () => {
         title: "Error",
         text: error?.message || "Something went wrong",
       });
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   return (
     <div>
-      <div className="pt-18 min-h-screen bg-gradient-to-br from-indigo-200/50 via-purple-200/50 to-cyan-200/50">
+      <div className=" min-h-screen bg-gradient-to-br from-indigo-200/50 via-purple-200/50 to-cyan-200/50">
         <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
             <div className="text-center mb-8">
@@ -144,7 +134,7 @@ const Login = () => {
 
             <button
               onClick={handleGoogleLogin}
-              disabled={loading}
+           
               className="w-full flex bg-white items-center justify-center gap-4 shadow-lg rounded-lg pl-3 py-3 border border-gray-300 hover:shadow-xl transition-shadow"
             >
               <img

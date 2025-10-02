@@ -71,6 +71,7 @@ export const AuthOptions = {
             email: user.email,
             image: user.image,
             role: "student", // default role
+            status: "pending",
           });
           await dbUser.save();
         }

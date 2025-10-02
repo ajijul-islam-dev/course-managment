@@ -7,15 +7,8 @@ import bcrypt from "bcryptjs";
 export const GET = async (req) => {
   try {
     await connectDB();
-    const { searchParams } = new URL(req.url);
-    const roles = searchParams.get("role")?.split(",") || []; // role query param: student,admin,instructor
 
-    let filter = {};
-    if (roles.length > 0) {
-      filter.role = { $in: roles };
-    }
-
-    const users = await User.find(filter).sort({ createdAt: -1 });
+    const users = await User.find({ role: "student" }).sort({ createdAt: -1 });
     return NextResponse.json(users, { status: 200 });
   } catch (error) {
     console.error("GET /users error:", error);

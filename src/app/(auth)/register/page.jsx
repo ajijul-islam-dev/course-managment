@@ -52,9 +52,8 @@ const Register = () => {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
     try {
-      const res = await signIn("google", { redirect: false });
+      const res = await signIn("google", {redirect: true, callbackUrl: "/"});
       if (res?.ok) {
         Swal.fire({
           icon: "success",
@@ -63,12 +62,6 @@ const Register = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => navigator.push("/"));
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Google Login Failed",
-          text: res?.error || "Something went wrong",
-        });
       }
     } catch (error) {
       Swal.fire({
@@ -76,14 +69,12 @@ const Register = () => {
         title: "Error",
         text: error?.message || "Something went wrong",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <div>
-      <div className="pt-18 min-h-screen bg-gradient-to-br from-indigo-200/50 via-pink-200/50 to-cyan-200/50">
+      <div className=" min-h-screen bg-gradient-to-br from-indigo-200/50 via-pink-200/50 to-cyan-200/50">
         <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
             <div className="text-center mb-8">
@@ -132,17 +123,6 @@ const Register = () => {
                   name="password"
                 />
               </div>
-
-              <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
-                <p className="font-medium mb-2">Password must contain:</p>
-                <ul className="space-y-1">
-                  <li className="text-gray-500">✓ At least 8 characters</li>
-                  <li className="text-gray-500">✓ One uppercase letter (A-Z)</li>
-                  <li className="text-gray-500">✓ One lowercase letter (a-z)</li>
-                  <li className="text-gray-500">✓ One number (0-9)</li>
-                </ul>
-              </div>
-
               <button
                 type="submit"
                 disabled={loading}
@@ -160,7 +140,6 @@ const Register = () => {
 
             <button
               onClick={handleGoogleLogin}
-              disabled={loading}
               className="w-full flex bg-white items-center justify-center gap-4 shadow-lg rounded-lg pl-3 py-3 border border-gray-300 hover:shadow-xl transition-shadow"
             >
               <img

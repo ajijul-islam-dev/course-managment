@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableRow, TableCell, TableBody, TableHeader } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 
 export default function StudentsDashboard() {
   const { data: session } = useSession();
-  const userRole = session?.user?.role || "student"; // current user role
+  const userRole = session?.user?.role || "student";
 
   const [students, setStudents] = useState([]);
   const [page, setPage] = useState(1);
@@ -21,7 +21,7 @@ export default function StudentsDashboard() {
   useEffect(() => {
     async function fetchStudents() {
       try {
-        const res = await axios.get("/api/users?role=student");
+       const res = await axios.get("/api/students");
         setStudents(res.data);
       } catch (err) {
         console.error(err);
@@ -36,8 +36,11 @@ export default function StudentsDashboard() {
     [students, page]
   );
 
-  // Handlers
+  const canModify = ["admin", "instructor"].includes(userRole);
+
+  // Confirm and delete
   const handleDelete = async (id) => {
+    if (!canModify) return;
     const confirm = await Swal.fire({
       title: "Are you sure?",
       text: "This will permanently delete the student!",
@@ -47,25 +50,44 @@ export default function StudentsDashboard() {
     });
 
     if (confirm.isConfirmed) {
-      await axios.delete("/api/users", { data: { userId: id } });
-      setStudents(prev => prev.filter(s => s._id !== id));
-      Swal.fire("Deleted!", "Student has been deleted.", "success");
+      try {
+        await axios.delete("/api/users", { data: { userId: id } });
+        setStudents(prev => prev.filter(s => s._id !== id));
+        Swal.fire("Deleted!", "Student has been deleted.", "success");
+      } catch (err) {
+        Swal.fire("Error!", "Failed to delete student.", "error");
+      }
     }
   };
 
+  // Confirm and change status
   const handleStatusChange = async (studentId, newStatus) => {
-    try {
-      await axios.patch("/api/users", { userId: studentId, status: newStatus });
-      setStudents(prev =>
-        prev.map(s => (s._id === studentId ? { ...s, status: newStatus } : s))
-      );
-      Swal.fire("Updated!", `Status changed to ${newStatus}`, "success");
-    } catch (err) {
-      Swal.fire("Error!", "Failed to update status.", "error");
+    if (!canModify) return;
+
+    const actionText =
+      newStatus === "approved"
+        ? "approve this student?"
+        : "disable this student?";
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to ${actionText}`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        await axios.patch("/api/users", { userId: studentId, status: newStatus });
+        setStudents(prev =>
+          prev.map(s => (s._id === studentId ? { ...s, status: newStatus } : s))
+        );
+        Swal.fire("Updated!", `Status changed to ${newStatus}`, "success");
+      } catch (err) {
+        Swal.fire("Error!", "Failed to update status.", "error");
+      }
     }
   };
-
-  const canModify = ["admin", "instructor"].includes(userRole);
 
   return (
     <div className="p-5 min-h-screen bg-gradient-to-br from-blue-200 via-pink-100 to-green-100">
